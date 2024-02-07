@@ -4,8 +4,6 @@ GUI have done:
   - Mục Tutorial
   - tên game + icon game
   - Bảng score
-  - background
-Coming:
-  - Intro
-  - Vài thứ sau phần Play
+  - background 
+  - Intro và vài thứ linh tinh khác đang trong quá trình hoàn thành
 
