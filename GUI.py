@@ -29,11 +29,10 @@ Magenta1 = (255, 0, 255)
 LightSeaGreen = (32, 178, 170)
 Purple1 = (160, 32, 240)
 Purple5	= (85, 26, 139)
+
 screen = pygame.display.set_mode((600, 800))
+
 running = True
-tuto = False
-panel = False
-score = 0
 bg_y = 0
 image1 = True
 image2 = False
@@ -44,9 +43,17 @@ bg = pygame.image.load(r'space-invaders-UI\bg.png')
 icon = pygame.image.load(r'space-invaders-UI\OIP.jpg')
 game_name = pygame.image.load(r'space-invaders-UI\Name.png')
 
+# Điều kiện chạy GUI
+menu = True 
+tuto = False
+panel = False
+LV1_start = False
+LV2_start = False
+Endless_1 = False
+Endless_2 = False 
 #Permission
-Unlock_EndlessMode = True
-lv1_passed = True
+Unlock_EndlessMode = False
+lv1_passed = False
 
 # Intro trong quá trình thử nghiệm
 # vid = Video(r'space-invaders-UI\Tic Tac Toe Video.mp4')
@@ -55,6 +62,59 @@ lv1_passed = True
 #     vid.draw(screen, (0, 0))
 #     pygame.display.update()
 
+# bảng score
+def background():
+    global bg_y
+    bg_y -= 1 
+    screen.blit(bg, (0, bg_y))
+    screen.blit(bg, (0, bg_y + 800))
+    if bg_y == -800:
+        bg_y = 0
+def before_start_game():
+    global panel
+    global menu
+    global tuto
+    tuto = menu = panel = False 
+
+def Score(score):
+    smallfont = pygame.font.SysFont('Comic Sans MS', 25)
+    pygame.draw.rect(screen, MidnightBlue, (350, -10, 300, 70), 0, 12)
+    pygame.draw.rect(screen, RoyalBlue3, (360, -10, 300, 61), 0, 12)
+    text_score = smallfont.render("Score: " + str(score), True, WHITE)
+    screen.blit(text_score, (400, 8))
+
+def Hp(hp):
+    Heart = pygame.image.load(r'space-invaders-UI/Heart.png')
+    pygame.draw.rect(screen, MidnightBlue, (-50, 740, 330, 150), 0, 12)
+    pygame.draw.rect(screen, RoyalBlue3, (-50, 750, 320, 150), 0, 12)
+    if hp > 0:
+        screen.blit(Heart, (25, 755))
+    if hp > 1:
+        screen.blit(Heart, (100, 755))
+    if hp > 2:
+        screen.blit(Heart, (175, 755))
+def Rocket(rocket):
+    smallfont = pygame.font.SysFont('Comic Sans MS', 25)
+    Rocket = pygame.image.load(r'space-invaders-UI/rocket.png')
+    pygame.draw.rect(screen, MidnightBlue, (480, 740, 330, 150), 0, 12)
+    pygame.draw.rect(screen, RoyalBlue3, (490, 750, 320, 150), 0, 12)
+    screen.blit(Rocket, (495, 753))
+    slrocket = smallfont.render(str(rocket), True, BLACK)
+    screen.blit(slrocket, (540, 755))
+
+def LV1_starting():
+    before_start_game()
+    background()
+    Score(50)
+    Hp(3)
+    Rocket(3)
+
+def LV2_starting():
+    pass
+def EL_1P():
+    pass
+def EL_2P():
+    pass
 
 # tên game + icon game
 def Name():
@@ -63,12 +123,7 @@ def Name():
     GAMENAME = 'Space Campaign'
     pygame.display.set_caption(GAMENAME)
 def Menu():
-    global bg_y
-    bg_y -= 1 
-    screen.blit(bg, (0, bg_y))
-    screen.blit(bg, (0, bg_y + 800))
-    if bg_y == -800:
-        bg_y = 0
+    background()
     mouse_x, mouse_y = pygame.mouse.get_pos()
     screen.blit(game_name, (75, 50))
     font = pygame.font.SysFont('Comic Sans MS', 50)
@@ -103,25 +158,15 @@ def Menu():
     screen.blit(text_help, (205, 560))
     screen.blit(text_quit, (230, 670))
 
-# bảng score
-def score(score):
-    smallfont = pygame.font.SysFont('Comic Sans MS', 25)
-    pygame.draw.rect(screen, MidnightBlue, (350, -10, 300, 70), 0, 12)
-    pygame.draw.rect(screen, RoyalBlue3, (360, -10, 300, 61), 0, 12)
-    text_score = smallfont.render("Score: " + str(score), True, BLACK)
-    screen.blit(text_score, (400, 8))
-def HPandRocket(hp, rocket):
-    pass
+
 def Panel():
+    lock = pygame.image.load(r'space-invaders-UI\lock.png')
+    biglock = pygame.transform.scale(lock, (200, 272))
     mouse_x, mouse_y = pygame.mouse.get_pos()
     smallfont = pygame.font.SysFont(None, 30)
     font = pygame.font.SysFont('Comic Sans MS', 35)
-    global bg_y
-    bg_y -= 1 
-    screen.blit(bg, (0, bg_y))
-    screen.blit(bg, (0, bg_y + 800))
-    if bg_y == -800:
-        bg_y = 0
+    global panel
+    background()
     pygame.draw.rect(screen, Purple5, (100, 100, 400, 600), 0, 8)
     pygame.draw.rect(screen, DarkSlateBlue, (105, 105, 390, 590), 0, 8)
     pygame.draw.line(screen, BLACK, (105, 300), (494, 300), 5)
@@ -135,7 +180,6 @@ def Panel():
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONUP:
                 if event.button == 1:
-                    global panel
                     panel = False
     pygame.draw.polygon(screen, BLACK,[[50, 15], [50, 85], [5, 50]])
     pygame.draw.rect(screen, BLACK, (50, 30, 40, 40))
@@ -144,30 +188,33 @@ def Panel():
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONUP:
                 if event.button == 1:
-                    pass
-                    # LV.1 is starting
+                    global lv1_passed 
+                    lv1_passed = True
+                    global LV1_start
+                    LV1_start = True 
     if mouse_x <= 315 + 160 and mouse_x >= 315 and mouse_y >= 175 and mouse_y <= 175 + 55 and lv1_passed:
         pygame.draw.rect(screen, DarkOrchid4, (315, 175, 160, 55), 0, 8)
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONUP:
                 if event.button == 1:
-                    pass
-                    # LV.2 is starting
+                    global Unlock_EndlessMode
+                    Unlock_EndlessMode = True
+                    global LV2_start
+                    LV2_start = True 
     if mouse_x <= 135 + 250 and mouse_x >= 135 and mouse_y >= 400 and mouse_y <= 400 + 55 and Unlock_EndlessMode:
         pygame.draw.rect(screen, DarkOrchid4, (135, 400, 250, 55), 0, 8)
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONUP:
                 if event.button == 1:
-                    pass
-                    #ENDLESS MODE WITH 1 PLAYER
+                    global Endless_1
+                    Endless_1 = True
     if mouse_x <= 135 + 250 and mouse_x >= 135 and mouse_y >= 550 and mouse_y <= 550 + 55 and Unlock_EndlessMode:
         pygame.draw.rect(screen, DarkOrchid4, (135, 550, 250, 55), 0, 8)
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONUP:
                 if event.button == 1:
-                    pass
-                    #ENDLESS MODE WITH 2 PLAYER
-
+                    global Endless_2
+                    Endless_2 = True
     Ordinary_Mode_text = font.render('Ordinary Mode', True, Magenta1)
     Endless_Mode_text = font.render('Endless Mode', True, Magenta1)
     Lv1_text = font.render('Level 1', True, BLACK)
@@ -176,8 +223,13 @@ def Panel():
     Two_player_mode_text = font.render('2-player mode', True, BLACK)
     text_0_1 = smallfont.render('Complete all levels in Ordinary Mode', True, BLACK)
     text_0_2 = smallfont.render('to unlock Endless Mode', True, BLACK)
-    text_1 = smallfont.render('You still alone?', True, BLACK)
+    text_1 = smallfont.render('Playing alone is still good', True, BLACK)
     text_2 = smallfont.render('Playing with friend is fun? Right?', True, BLACK)
+    if lv1_passed == False: 
+        screen.blit(lock, (375, 175))
+    if Unlock_EndlessMode == False:
+        screen.blit(lock, (250, 400))
+        screen.blit(lock, (250, 550))
     screen.blit(Ordinary_Mode_text, (180, 110))
     screen.blit(Lv1_text, (150, 180))
     screen.blit(Lv2_text, (335, 180))
@@ -196,13 +248,7 @@ def Tutorial():
     smallfont = pygame.font.SysFont('Comic Sans MS', 25)
     small2font = pygame.font.SysFont('Comic Sans MS', 24)
     small1font = pygame.font.SysFont('Comic Sans MS', 20)
-    global bg_y
-    bg_y -= 1 
-    screen.blit(bg, (0, bg_y))
-    screen.blit(bg, (0, bg_y + 800))
-    if bg_y == -800:
-        bg_y = 0
-    pygame.draw.rect(screen, GRAY11, (0, 0, 600, 800), 10)
+    background()
     pygame.draw.rect(screen, RED, (525, 0, 75, 75))
     if mouse_x <= 525 + 75 and mouse_x >= 525 and mouse_y >= 0 and mouse_y <= 75:
         pygame.draw.rect(screen, DARK_RED, (525, 0, 75, 75))
@@ -254,18 +300,22 @@ def Tutorial():
     if image1:
         list_1 = smallfont.render('1/4', True, WHITE)
         screen.blit(list_1, (278, 610))
+        image_1 = smallfont.render('[Image of Gameplay]', True, WHITE)
         text_1_1 = smallfont.render('The aliens are coming! Your mission is to', True, WHITE)
         text_1_2 = smallfont.render('prevent their descent and invasion by', True, WHITE)
         text_1_3 = smallfont.render('shooting them down.', True, RED)
+        screen.blit(image_1, (60, 150))
         screen.blit(text_1_1, (70, 450))
         screen.blit(text_1_2, (80, 480))
         screen.blit(text_1_3, (190, 510))
     elif image2:
         list_2 = smallfont.render('2/4', True, WHITE)
         screen.blit(list_2, (278, 610))
+        image_2 = smallfont.render('[Image of Gameplay]', True, WHITE)
         text_2_1 = small1font.render('Eliminate the aliens to get much scores as you can!', True, GREEN_MONO)
         text_2_2 = smallfont.render('Careful! Aliens will shoot back at you.', True, WHITE)
         text_2_3 = smallfont.render('You only have 3 lives!', True, WHITE)
+        screen.blit(image_2, (60, 150))
         screen.blit(text_2_1, (68, 465))
         screen.blit(text_2_2, (85, 485))
         screen.blit(text_2_3, (170, 510))
@@ -311,11 +361,20 @@ def Tutorial():
         screen.blit(text_4_3, (190, 525))
 def GUI():
     Name()
-    Menu()
+    if menu:
+        Menu()
     if tuto:
         Tutorial()
     if panel:
         Panel()
+    if LV1_start:
+        LV1_starting()
+    if LV2_start:
+        LV2_starting()
+    if Endless_1:
+        EL_1P()
+    if Endless_2:
+        EL_2P() 
 while running:
     GUI()
     for event in pygame.event.get():
