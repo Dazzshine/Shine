@@ -50,6 +50,7 @@ game_name = pygame.image.load(r'space-invaders-UI\Name.png')
 # Điều kiện chạy GUI
 menu = True 
 tuto = False
+credit = False  
 panel = False
 exit = False
 LV1_start = False
@@ -76,11 +77,9 @@ def background():
     if bg_y == -800:
         bg_y = 0
 
-def before_start_game():
-    global panel
-    global menu
-    global tuto
-    tuto = menu = panel = False 
+def reset_all():
+    global panel, menu, tuto, credit, LV1_start, LV2_start, Endless_1, Endless_2
+    tuto = menu = panel = credit = LV1_start = LV2_start = Endless_1 = Endless_2 = False 
 def Exit():
     global exit
     global last_click
@@ -94,11 +93,12 @@ def Exit():
         smallfont = pygame.font.SysFont('Comic Sans MS', 30)
         pygame.draw.rect(screen, GRAY11, (150, 300, 300, 150), 0, 8)
         pygame.draw.rect(screen, BLUE, (160, 310, 280, 130), 0, 8)
-        pygame.draw.rect(screen, RED, (240, 390, 125, 40), 0, 8)
+        pygame.draw.rect(screen, RED, (170, 390, 125, 40), 0, 8)
         pygame.draw.rect(screen, WHITE, (170, 330, 125, 40), 0, 8)
         pygame.draw.rect(screen, WHITE, (305, 330, 125, 40), 0, 8)
-        if mouse_x >= 240 and mouse_x <= 240 + 125 and mouse_y >= 390 and mouse_y <= 390 + 40:
-            pygame.draw.rect(screen, DARK_RED, (240, 390, 125, 40), 0, 8)
+        pygame.draw.rect(screen, WHITE, (305, 390, 125, 40), 0, 8)
+        if mouse_x >= 170 and mouse_x <= 170 + 125 and mouse_y >= 390 and mouse_y <= 390 + 40:
+            pygame.draw.rect(screen, DARK_RED, (170, 390, 125, 40), 0, 8)
             for event in pygame.event.get():
                 if event.type == pygame.MOUSEBUTTONUP:
                     if event.button == 1:
@@ -109,7 +109,15 @@ def Exit():
             for event in pygame.event.get():
                 if event.type == pygame.MOUSEBUTTONUP:
                     if event.button == 1:
-                        exit = not exit 
+                        exit = not exit
+        if mouse_x >= 305 and mouse_x <= 305 + 125 and mouse_y >= 390 and mouse_y <= 390 + 40:
+            pygame.draw.rect(screen, WHITE_B, (305, 390, 125, 40), 0, 8)
+            for event in pygame.event.get():
+                if event.type == pygame.MOUSEBUTTONUP:
+                    if event.button == 1:
+                        reset_all()
+                        global menu
+                        menu = True 
         if mouse_x >= 305 and mouse_x <= 305 + 125 and mouse_y >= 330 and mouse_y <= 330 + 40:
             pygame.draw.rect(screen, WHITE_B, (305, 330, 125, 40), 0, 8)
             for event in pygame.event.get():
@@ -120,7 +128,9 @@ def Exit():
         back_text = smallfont.render('Back', True, BLACK)
         restart_text = smallfont.render('Restart', True, BLACK)
         quit_text = smallfont.render('Quit', True, BLACK)
-        screen.blit(quit_text, (270, 385))
+        menu_text = smallfont.render('Menu', True, BLACK)
+        screen.blit(menu_text, (330, 385))
+        screen.blit(quit_text, (200, 385))
         screen.blit(back_text, (200, 330))
         screen.blit(restart_text, (315, 330)) 
 def Score(score):
@@ -151,12 +161,15 @@ def Rocket(rocket):
     screen.blit(slrocket, (540, 755))
 
 def LV1_starting():
-    before_start_game()
+    reset_all()
     background()
-    Score(50)
+    global LV1_start
+    LV1_start = True
+    Score(111)
     Hp(3)
     Rocket(3)
     Exit()
+
 def LV2_starting():
     pass
 def EL_1P():
@@ -174,10 +187,12 @@ def Menu():
     background()
     mouse_x, mouse_y = pygame.mouse.get_pos()
     screen.blit(game_name, (75, 50))
+    smallfont = pygame.font.SysFont('Comic Sans MS', 30)
     font = pygame.font.SysFont('Comic Sans MS', 50)
     text_play = font.render('Play', True, BLACK)
     text_help = font.render('Tutorial', True, BLACK)
     text_quit = font.render('QUIT', True, BLACK)
+    text_credit = smallfont.render('Credit', True, WHITE)
     pygame.draw.rect(screen, GRAY11, (0, 0, 600, 800), 10)
     pygame.draw.rect(screen, WHITE, (160, 460, 280, 60), 0, 10)
     pygame.draw.rect(screen, GREEN_MONO, (160, 570, 280, 60), 0, 10)
@@ -202,11 +217,31 @@ def Menu():
                 if event.button == 1: 
                     global tuto
                     tuto = True
+    if mouse_x <= 98 and mouse_x >= 10 and mouse_y >= 760 and mouse_y <= 785: 
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONUP:
+                if event.button == 1:
+                    global credit
+                    credit = not credit  
     screen.blit(text_play, (255, 450))
     screen.blit(text_help, (205, 560))
     screen.blit(text_quit, (230, 670))
-
-
+    screen.blit(text_credit,(10, 750))
+def Credit():
+    font = pygame.font.SysFont('Comic Sans MS', 40)
+    smallfont = pygame.font.SysFont('Comic Sans MS', 25)
+    pygame.draw.rect(screen, GRAY11, (60, 150, 480, 300), 0, 8)
+    pygame.draw.rect(screen, WHITE, (70, 160, 460, 280), 0, 8)
+    text_0 = font.render('Credit', True, BLACK)
+    text_1 = smallfont.render('Quang: Game designer, UI designer', True, BLACK)
+    text_2 = smallfont.render('Nga: Artist, Marketing', True, BLACK)
+    text_3 = smallfont.render('Hung Thinh: Programmer', True, BLACK)
+    text_4 = smallfont.render('Huy Thinh: Programmer', True, BLACK)
+    screen.blit(text_0, (240, 150))
+    screen.blit(text_1, (80, 210))
+    screen.blit(text_2, (80, 260))
+    screen.blit(text_3, (80, 310))
+    screen.blit(text_4, (80, 360))
 def Panel():
     lock = pygame.image.load(r'space-invaders-UI\lock.png')
     biglock = pygame.transform.scale(lock, (200, 272))
@@ -294,7 +329,6 @@ def Tutorial():
     mouse_x, mouse_y = pygame.mouse.get_pos()
     font = pygame.font.SysFont('Comic Sans MS', 35)
     smallfont = pygame.font.SysFont('Comic Sans MS', 25)
-    small2font = pygame.font.SysFont('Comic Sans MS', 24)
     small1font = pygame.font.SysFont('Comic Sans MS', 20)
     background()
     pygame.draw.rect(screen, RED, (525, 0, 75, 75))
@@ -412,6 +446,8 @@ def GUI():
     Name()
     if menu:
         Menu()
+    if credit:
+        Credit()
     if tuto:
         Tutorial()
     if panel:
